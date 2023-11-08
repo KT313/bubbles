@@ -75,7 +75,7 @@ you can use any other model instead of bubbles.BaseModel, as long as the input a
                    bubbles = bubbles_array,
                    ticks_to_run = 3, # 0 ticks outputs vector filled with 0s, 1 tick only uses base bubble. other bubbles only get used after the first tick. 
                    connection_size=32, # total connection size (single connection size = connection_size / num_connections)
-                   output_size = dictionary_max_size, # input size is equal to base_bubble input size for now
+                   output_size = dictionary_max_size,
                    ).to(device) # optionally move the model to cuda, recommended
 ```
 
