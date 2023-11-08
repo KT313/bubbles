@@ -16,7 +16,7 @@ The model will return an output after a set amount of ticks.
 * for now inputs and outputs have to be the same size everywhere
 
 ### how to use
-example:
+example:  
 you can use any other model instead of bubbles.BaseModel, as long as the input and output size of that model are as big as connection_size
 ```
     model_base = bubbles.BaseModel(model_size = 128, model_layers = 3, connections = 4, connection_size = 32) # model input/output = connections * connection_size for now
