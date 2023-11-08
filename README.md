@@ -12,7 +12,8 @@ The model will return an output after a set amount of ticks.
 * enables use of different architectures in a single model (e.g. Transformers, RNNs, custom models, etc.)  
 
 ##### Disadvantages:  
-* inefficient in simple tasks  
+* inefficient in simple tasks
+* for now inputs and outputs have to be the same size everywhere
 
 ##### future updates:  
 * easier to use  
