@@ -25,25 +25,26 @@ Bubble_2 -- 32 --> |                                |  -- 32 -->  (one of the in
 Bubble_3 -- 32 -->/                                  \ -- 32 -->  (one of the inputs of Bubble_3 next tick)
 ```
 
-input size to system: 32  
--> conversion to tensor  
--> expansion to fit base_bubble (bubble_0) input by filling missing values with 0  
-new size: (4, 32)  
-create storage tensor of size (4, 4, 32) (from 4 bubbles, to 4 bubbles, connection size 32) filled with 0s  
+start:  
+> input size to system: 32  
+> -> conversion to tensor  
+> -> expansion to fit base_bubble (bubble_0) input by filling missing values with 0  
+> new size: (4, 32)  
+> create storage tensor of size (4, 4, 32) (from 4 bubbles, to 4 bubbles, connection size 32) filled with 0s  
   
 first tick:  
-Bubble_0 takes (4, 32) input, gives (4, 32) output  
-output stored in storage tensor at (0) (since from Bubble_0)  
+> Bubble_0 takes (4, 32) input, gives (4, 32) output  
+> output stored in storage tensor at (0) (since from Bubble_0)  
   
 second to last tick:  
-each bubble gets the content of storage_tensor(:, bubble_id, :) (all outputs directed to this bubble)  
--> processes content  
--> output gets stored in storage_tensor(bubble_id)  
+> each bubble gets the content of storage_tensor(:, bubble_id, :) (all outputs directed to this bubble)  
+> -> processes content  
+> -> output gets stored in storage_tensor(bubble_id)  
   
 after last tick:  
-output = storage_tensor(0, 0, :) (size 32)  
--> conversion into output_size with a simple OutputBaseModel  
--> transformed from 32 into 1, 16 or whatever you set output_size to when creating System()  
+> output = storage_tensor(0, 0, :) (size 32)  
+> -> conversion into output_size with a simple OutputBaseModel  
+> -> transformed from 32 into 1, 16 or whatever you set output_size to when creating System()  
   
 done.  
 
