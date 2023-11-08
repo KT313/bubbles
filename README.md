@@ -18,10 +18,10 @@ output to Bubble_3: 32          32          32          32
 
 
 
-Bubble_0 -- 32 -->\                                  / -- 32 -->  
-Bubble_1 -- 32 --> | -- 128 --> Bubble_0 -- 128 --> | -- 32 -->  
-Bubble_2 -- 32 --> |                                | -- 32 -->  
-Bubble_3 -- 32 -->/                                  \ -- 32 -->  
+Bubble_0 -- 32 -->\                                  / -- 32 -->  (one of the inputs of Bubble_0 next tick)
+Bubble_1 -- 32 --> | -- 128 --> Bubble_0 -- 128 --> |  -- 32 -->  (one of the inputs of Bubble_1 next tick)
+Bubble_2 -- 32 --> |                                |  -- 32 -->  (one of the inputs of Bubble_2 next tick)
+Bubble_3 -- 32 -->/                                  \ -- 32 -->  (one of the inputs of Bubble_3 next tick)
 ```
 
 
