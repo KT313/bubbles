@@ -8,6 +8,7 @@ The model will return an output after a set amount of ticks.
 connection_size = 32
 connections = 4 
 
+```
                     Bubble_0    Bubble_1    Bubble_2    Bubble_3  
 output total:       128         128         128         128  
 output to Bubble_0: 32          32          32          32  
@@ -17,11 +18,11 @@ output to Bubble_3: 32          32          32          32
 
 
 
-Bubble_0 -- 32 -->\                                / -- 32 -->  
-Bubble_1 -- 32 -->| -- 128 --> Bubble_0 -- 128 --> | -- 32 -->  
-Bubble_2 -- 32 -->|                                | -- 32 -->  
-Bubble_3 -- 32 -->/                                \ -- 32 -->  
-
+Bubble_0 -- 32 -->\                                  / -- 32 -->  
+Bubble_1 -- 32 --> | -- 128 --> Bubble_0 -- 128 --> | -- 32 -->  
+Bubble_2 -- 32 --> |                                | -- 32 -->  
+Bubble_3 -- 32 -->/                                  \ -- 32 -->  
+```
 
 
 ##### Advantages:  
