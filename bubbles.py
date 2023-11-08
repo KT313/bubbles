@@ -8,7 +8,7 @@ from .settings import *
 class BaseModel(nn.Module):
     def __init__(self, connections, connection_size, model_size, model_layers):
         super(BaseModel, self).__init__()
-        # print(f"basemodel: {connection_size}")
+        # print(f"basemodel: {connection_size} {connections} {connection_size*connections}")
         self.layer_input = nn.Linear(connection_size*connections, model_size)
         self.layers_middle = nn.ModuleList(nn.Linear(model_size, model_size) for _ in range(model_layers))
         self.layer_output = nn.Linear(model_size, connection_size*connections) #nn.ModuleList(nn.Linear(model_size,connection_size) for _ in range(connections))
@@ -22,7 +22,7 @@ class BaseModel(nn.Module):
         # Reshape the input while keeping the batch size the same
         batch_size = x.size(0)
         x = x.view(batch_size, -1).to("cuda:0")
-        # print(f"reshaped BaseModel input: {x.shape}, layer shape: {self.layer_input.weight.shape}")
+      # print(f"reshaped BaseModel input: {x.shape}, layer shape: {self.layer_input.weight.shape}")
         x = self.relu(self.layer_input(x))
         for layer_middle in self.layers_middle:
             x = self.relu(layer_middle(x))
@@ -66,7 +66,7 @@ class OutputBaseModel(nn.Module):
     def __init__(self, connections, connection_size, model_size, model_layers, output_size):
         super(OutputBaseModel, self).__init__()
         # print(f"basemodel: {connection_size}")
-        self.layer_input = nn.Linear(256, model_size)
+        self.layer_input = nn.Linear(connection_size, model_size)
         self.layers_middle = nn.ModuleList(nn.Linear(model_size, model_size) for _ in range(model_layers))
         self.layer_output = nn.Linear(model_size, output_size) #nn.ModuleList(nn.Linear(model_size,connection_size) for _ in range(connections))
         self.relu = nn.ReLU()
@@ -128,19 +128,17 @@ class Bubble(nn.Module):
         pass
 
 class System(nn.Module):
-    def __init__(self, output_size = 4096, ticks_to_run = 3, connection_size = 32, base_bubble = None, bubbles = [], outside_input = np.zeros(64).astype(float)):
+    def __init__(self, bubble_count = 5, model_size = 1024, model_layers = 3,output_size = 4096, ticks_to_run = 3, connection_size = 32, base_bubble = None, bubbles = [], outside_input = np.zeros(64).astype(float)):
         super(System, self).__init__()
         # print(f"system: {connection_size}")
         if base_bubble == None:
-            self.base_bubble = Bubble(is_base_bubble=True, num_connections = 4, connection_size = connection_size, model_size = 1024, model_layers = 3, id = 0)
+            self.base_bubble = Bubble(is_base_bubble=True, num_connections = bubble_count, connection_size = connection_size, model_size = model_size, model_layers = model_layers, id = 0)
         else:
             self.base_bubble = base_bubble
         if bubbles == []:
-            self.bubbles = nn.ModuleList([
-                Bubble(num_connections = 4, connection_size = connection_size, model_size = 1024, model_layers = 3, id = 1),
-                Bubble(num_connections = 4, connection_size = connection_size, model_size = 1024, model_layers = 3, id = 2),
-                Bubble(num_connections = 4, connection_size = connection_size, model_size = 1024, model_layers = 3, id = 3)
-            ])
+            for i in range(bubble_count-1):
+                bubbles.append(Bubble(num_connections = bubble_count, connection_size = connection_size, model_size = model_size, model_layers = model_layers, id = i+1))
+            self.bubbles = nn.ModuleList(bubbles)
         else:
             self.bubbles = nn.ModuleList(bubbles)
         self.ticks = 0
@@ -148,7 +146,7 @@ class System(nn.Module):
         self.ticks_to_run = ticks_to_run
         self.outside_input = outside_input
         self.output_size = output_size
-        self.outputmodel = OutputBaseModel(connections = 1, connection_size = 32, model_size = 512, model_layers = 3, output_size = self.output_size).to("cuda:0")
+        self.outputmodel = OutputBaseModel(connections = 1, connection_size = connection_size, model_size = model_size, model_layers = model_layers, output_size = self.output_size).to("cuda:0")
         self.num_bubbles = 1 + len(self.bubbles) # 1 for base_bubble
         self.connection_buffer = torch.zeros((batch_size, self.num_bubbles, self.num_bubbles, self.connection_size), requires_grad=False) # saves outputs of bubbles and provides them as inputs next tick. [0, 1] -> output from bubble 0, to be used for bubble 1
 
@@ -189,16 +187,17 @@ class System(nn.Module):
         start_run_time = time.time()
         tick_time = []
         wrong_batch_size = False
-        # print(x.shape[0])
+      # print(x.shape)
         if x.shape[0] < batch_size:
             wrong_batch_size = True
             merker_batch_size = x.shape[0]
             c = torch.zeros(batch_size, x.shape[1])
             c[:x.shape[0]] = x
             x = c
-        a = torch.zeros(batch_size, 256).to("cuda:0")
+        a = torch.zeros(batch_size, self.connection_size).to("cuda:0")
         a[:, :32] = x
         x = a
+      # print(x.shape)
         # Run the system for a certain number of ticks
         for _ in range(self.ticks_to_run):
             start_tick_time = time.time()
@@ -208,7 +207,7 @@ class System(nn.Module):
         output = self.outputmodel(output)
 
         if wrong_batch_size:
-            print(output.shape)
+            # print(output.shape)
             output = output[:merker_batch_size]
             # print(output.shape)
         # reset
@@ -219,5 +218,3 @@ class System(nn.Module):
         # print(f"avg tick time: {(sum(tick_time)/self.ticks_to_run)*1000:.2f}ms")
         # print(f"total run time: {(time.time()-start_run_time)*1000:.2f}ms")
         return output
-
-
