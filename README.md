@@ -58,7 +58,8 @@ you can use any other model instead of bubbles.BaseModel, as long as the input a
 ##### future updates:  
 * easier to use  
 * better documentation  
-* more features  
+* more features
+* make base bubble into input_bubble (only used once before the first tick) and add output_bubble (only used once after last tick)
 
 ##### known problems:
 * when using cpu instead of gpu (cuda): RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation
