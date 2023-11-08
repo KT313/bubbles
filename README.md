@@ -18,3 +18,6 @@ The model will return an output after a set amount of ticks.
 * easier to use  
 * better documentation  
 * more features  
+
+##### known problems:
+* when using cpu instead of gpu (cuda): RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation
